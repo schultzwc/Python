@@ -17,25 +17,25 @@ def get_meal(connection):
 
 
 def get_recipient(connection):
-    return 'schultzwc@yahoo.com'
+    return ['schultzwc@yahoo.com']
 
 
-def send_email(recipient, email_message):
+def send_email(recipient, email_subject, email_message):
     port = 465
     sender_email = 'wcschultz42@gmail.com'
-    receiver_email = recipient
     password = '2433006Ws'
     message = MIMEMultipart('alternative')
-    message['Subject'] = 'Test Meals'
+    message['Subject'] = email_subject
     message['From'] = sender_email
-    message['To'] = receiver_email
     html_message = MIMEText(email_message, 'html')
     message.attach(html_message)
 
     context = ssl.create_default_context()
     with smtplib.SMTP_SSL('smtp.gmail.com', port, context=context) as server:
         server.login(sender_email, password)
-        server.sendmail(sender_email, receiver_email, message.as_string())
+        for receiver in recipient:
+            message['To'] = receiver
+            server.sendmail(sender_email, receiver, message.as_string())
 
 
 
@@ -49,10 +49,11 @@ future = now + timedelta(days=7)
 WeekStart = datetime.strftime(now, '%B %d, %Y')
 WeekEnd = datetime.strftime(future, '%B %d, %Y')
 
+email_subject = 'Meals for ' + WeekStart + ' to ' + WeekEnd
 email_message = '''
 <html>
     <body>
-        <p>Meals for ''' + WeekStart + ' to ' + WeekEnd + '''<br><br>'''
+        <p>'''
 
 for day in days:
     day_meal = get_meal(connection)
@@ -67,7 +68,7 @@ email_message = email_message + '''
 </html>'''
 
 recipient = get_recipient(connection)
-send_email(recipient, email_message)
+send_email(recipient, email_subject, email_message)
 
 if connection:
     connection.close()
