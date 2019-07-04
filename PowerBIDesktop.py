@@ -52,7 +52,7 @@ def send_mail():
         msg.set_content('A new version of Power BI has been released.')
         msg['Subject'] = 'New Power BI Update'
         msg['From'] = email
-        msg['To'] = '6124994263@tmomail.net'
+        msg['To'] = '6124994263@vtext.com'
         server.login(email, password)
         server.send_message(msg)
         server.quit()
